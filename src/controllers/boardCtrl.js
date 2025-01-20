@@ -25,7 +25,7 @@ exports.getBoards = async (req, res) => {
   
       const boards = await Board.aggregate([
         {
-          $match: { owner: mongoose.Types.ObjectId(userId) },
+          $match: { owner: userId },
         },
         {
           $lookup: {
