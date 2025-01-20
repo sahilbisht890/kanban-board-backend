@@ -10,10 +10,10 @@ const {
 
 const router = express.Router();
 
-router.post("/:boardId/task",verifyJWT, createTask);
-router.put("/:taskId",verifyJWT, updateTask);
+router.post("/create",verifyJWT, createTask);
+router.put("/update/:taskId",verifyJWT, updateTask);
 router.delete("/:taskId",verifyJWT, deleteTask);
-router.put("/:taskId/status",verifyJWT, updateTaskStatus);
+router.put("/status/:taskId",verifyJWT, updateTaskStatus);
 router.get("/tasks/:board_id",verifyJWT, getTasksByBoard);
 
 module.exports = router;

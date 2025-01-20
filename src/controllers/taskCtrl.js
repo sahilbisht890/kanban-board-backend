@@ -5,8 +5,7 @@ const mongoose = require("mongoose");
 
 exports.createTask = async (req, res) => {
   try {
-    const { title, description, dueDate, priority, status } = req.body;
-    const { boardId } = req.params;
+    const { title, description, dueDate, priority, status , boardId } = req.body;
 
     const task = new Task({
       title,
