@@ -1,4 +1,5 @@
 const Board = require("../models/board.model")
+const mongoose = require("mongoose");
 
 exports.createBoard = async (req, res) => {
   try {

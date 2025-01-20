@@ -1,5 +1,7 @@
 const Task = require("../models/task.model");
 const Board = require("../models/board.model");
+const mongoose = require("mongoose");
+
 
 exports.createTask = async (req, res) => {
   try {
@@ -86,7 +88,7 @@ exports.getTasksByBoard = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(board_id)) {
       return res.status(400).json({ error: "Invalid board ID" });
     }
-    
+
     const tasks = await Task.find({ board: board_id }).select("-__v");
 
     res.status(200).json({ message: "Task list successfully fetched", data: tasks });
