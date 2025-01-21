@@ -28,7 +28,7 @@ exports.createTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { taskId } = req.query.taskId;
     console.log('taskId' , taskId);
     const updates = req.body;
 
