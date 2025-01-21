@@ -28,7 +28,7 @@ exports.createTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const { taskId } = req.query.taskId;
+    const  taskId  = req.query.taskId;
     console.log('taskId' , taskId);
     const updates = req.body;
 
@@ -46,7 +46,7 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   try {
-    const { taskId } = req.query.taskId;
+    const taskId  = req.query.taskId;
 
     const task = await Task.findByIdAndDelete(taskId);
 
@@ -67,7 +67,7 @@ exports.deleteTask = async (req, res) => {
 
 exports.getTasksByBoard = async (req, res) => {
   try {
-    const { boardId } = req.query.boardId; 
+    const boardId  = req.query.boardId; 
 
     if (!mongoose.Types.ObjectId.isValid(boardId)) {
       return res.status(400).json({ error: "Invalid board ID" });
