@@ -46,7 +46,7 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { taskId } = req.query.taskId;
 
     const task = await Task.findByIdAndDelete(taskId);
 
@@ -62,34 +62,18 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
-exports.updateTaskStatus = async (req, res) => {
-  try {
-    const { taskId } = req.params;
-    const { status } = req.body;
-
-    const task = await Task.findByIdAndUpdate(taskId, { status }, { new: true });
-
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-
-    res.status(200).json({ message: "Task status updated successfully", task });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 
 
 exports.getTasksByBoard = async (req, res) => {
   try {
-    const { board_id } = req.params; 
+    const { boardId } = req.query.boardId; 
 
-    if (!mongoose.Types.ObjectId.isValid(board_id)) {
+    if (!mongoose.Types.ObjectId.isValid(boardId)) {
       return res.status(400).json({ error: "Invalid board ID" });
     }
 
-    const tasks = await Task.find({ board: board_id }).select("-__v");
+    const tasks = await Task.find({ board: boardId }).select("-__v");
 
     res.status(200).json({ message: "Task list successfully fetched", data: tasks });
   } catch (error) {
