@@ -36,6 +36,9 @@ exports.getBoards = async (req, res) => {
           },
         },
         {
+          $sort: { updatedAt: -1 }, 
+        },
+        {
           $project: {
             name: 1, 
             totalTasks: { $size: "$tasks" }, 

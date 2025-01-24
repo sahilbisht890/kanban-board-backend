@@ -182,8 +182,6 @@ const refreshAccessToken = async (req, res) => {
   
       const accessToken = await user.generateAccessToken();
 
-      user.refreshToken = newRefreshToken ;
-      await user.save();
 
         const userData = await User.findById(decodedToken?._id).select(
       "-password -refreshToken");

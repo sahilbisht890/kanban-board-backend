@@ -73,7 +73,7 @@ exports.getTasksByBoard = async (req, res) => {
       return res.status(400).json({ error: "Invalid board ID" });
     }
 
-    const tasks = await Task.find({ board: boardId }).select("-__v");
+    const tasks = await Task.find({ board: boardId }).select("-__v").sort({updatedAt : -1});
 
     res.status(200).json({ message: "Task list successfully fetched", data: tasks });
   } catch (error) {
