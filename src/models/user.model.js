@@ -34,6 +34,15 @@ const userSchema = new Schema(
     },
     verificationToken: String,
     verificationTokenExpiry: Date,
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
