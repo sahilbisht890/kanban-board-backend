@@ -1,54 +1,68 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const sendVerificationEmail = require("../helpers/nodemailer")
+
 
 const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-
-    if(!username || !email || !password) {
-      return res
-      .status(401)
-      .json({ success: false, message: "Required Fields are missing!" });
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields are missing",
+      });
     }
 
-    const existingUser = await User.findOne({
-      $or: [{ username }, { email }],
-    });
+    const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Username or Email already exists!" });
+    // If verified user exists → block
+    if (existingUser && existingUser.isVerified) {
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
     }
 
-    const hashpassword = await bcrypt.hash(password, 10);
+    // If unverified user exists → remove
+    if (existingUser && !existingUser.isVerified) {
+      await User.deleteOne({ _id: existingUser._id });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     const newUser = new User({
       username,
       email,
-      password : hashpassword,
-      habits: [],
+      password: hashedPassword,
+      verificationToken,
+      verificationTokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
 
     await newUser.save();
 
-   return  res
-      .status(200)
-      .json({
-        success: true,
-        message: "User created successfully!",
-        user: newUser,
-      });
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
 
+    await sendVerificationEmail(email, verificationLink);
+
+    return res.status(201).json({
+      success: true,
+      message: "User registered. Please verify your email.",
+    });
 
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ success: false, message: "An error occurred while signing in" });
+    console.error("Register Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
+
 
 
 
@@ -69,6 +83,12 @@ const loginUser = async (req, res) => {
       return res
         .status(401)
         .json({ success: false, message: "Email doesn't exists!" });
+    }
+
+    if(!existingUser.isVerified) {
+      return res
+      .status(401)
+      .json({ success: false, message: "Email is not verified. Please verify your email before logging in." });
     }
 
     const isPasswordCorrect = await existingUser.isPasswordCorrect(password);
@@ -215,4 +235,42 @@ const checkAuthentication = (req, res) => {
 };
 
 
-module.exports = { registerUser  , loginUser , logoutUser , refreshAccessToken , checkAuthentication };
+const verifyEmail = async (req, res) => {
+  const { token } = req.params;
+
+  try {
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification token",
+      });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiry = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+    });
+
+  } catch (error) {
+    console.error("Verify Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+
+
+module.exports = { registerUser  , loginUser , logoutUser , refreshAccessToken , checkAuthentication , verifyEmail };

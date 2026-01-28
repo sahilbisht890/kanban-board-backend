@@ -20,6 +20,10 @@ const userSchema = new Schema(
       lowecase: true,
       trim: true,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     password: {
       type: String,
       required: [true, "Password is required"],
@@ -28,10 +32,12 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+    verificationToken: String,
+    verificationTokenExpiry: Date,
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -48,7 +54,7 @@ userSchema.methods.generateAccessToken = function () {
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
+    },
   );
 };
 userSchema.methods.generateRefreshToken = function () {
@@ -59,7 +65,7 @@ userSchema.methods.generateRefreshToken = function () {
     process.env.REFRESH_TOKEN_SECRET,
     {
       expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-    }
+    },
   );
 };
 
