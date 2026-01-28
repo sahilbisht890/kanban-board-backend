@@ -1,18 +1,12 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 async function sendVerificationEmail(to, verificationLink) {
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: `"Todoist" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: `Todoist <${process.env.RESEND_FROM_EMAIL}>`,
       to,
       subject: "Verify your email",
       html: `
@@ -38,12 +32,14 @@ async function sendVerificationEmail(to, verificationLink) {
           </p>
         </div>
       `,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
-    console.error("Failed to send verification email:", error);
+    console.error(
+      "Failed to send verification email:",
+      error?.message || error
+    );
     return false;
   }
 }
