@@ -85,6 +85,14 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Email doesn't exists!" });
     }
 
+    if (!existingUser.password) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Please set up your password first using Forgot Password.",
+      });
+    }
+
     if(!existingUser.isVerified) {
       return res
       .status(401)

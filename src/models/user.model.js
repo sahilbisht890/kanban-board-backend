@@ -26,7 +26,9 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: function () {
+        return this.authProvider !== "google";
+      },
     },
     refreshToken: {
       type: String,
@@ -50,6 +52,7 @@ const userSchema = new Schema(
 );
 
 userSchema.methods.isPasswordCorrect = async function (password) {
+  if (!this.password) return false;
   return await bcrypt.compare(password, this.password);
 };
 
