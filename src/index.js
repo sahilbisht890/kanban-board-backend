@@ -5,7 +5,7 @@ const dotenv  = require('dotenv');
 const connectDB = require('./db/index');
 const cors = require('cors');
 dotenv.config();
-app.use(express.json({limit: "16kb"}));
+app.use(express.json({limit: "10mb"}));
 app.use(cookieParser());
 
 

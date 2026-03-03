@@ -11,6 +11,35 @@ const taskSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    link: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    attachments: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        publicId: {
+          type: String,
+          required: true,
+        },
+        originalName: {
+          type: String,
+          default: "attachment",
+        },
+        mimeType: {
+          type: String,
+          default: "application/octet-stream",
+        },
+        size: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     dueDate: {
       type: Date,
     },
