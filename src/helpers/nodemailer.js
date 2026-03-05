@@ -1,3 +1,5 @@
+const logger = require("../utils/logger");
+
 async function sendVerificationEmail(to, verificationLink) {
   try {
     const apiKey = process.env.MAILERSEND_API_KEY;
@@ -60,9 +62,9 @@ async function sendVerificationEmail(to, verificationLink) {
 
     return true;
   } catch (error) {
-    console.error(
-      "Failed to send verification email:",
-      error?.message || error
+    logger.error(
+      { err: error, to },
+      "Failed to send verification email"
     );
     return false;
   }

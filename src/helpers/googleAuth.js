@@ -1,5 +1,6 @@
 const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/user.model");
+const logger = require("../utils/logger");
 
 
 const redirectURI = process.env.BACKEND_URL + "/api/auth/google/callback";
@@ -80,7 +81,7 @@ const googleAuthCallback = async (req, res) => {
       .redirect(`${process.env.FRONTEND_URL}`);
 
   } catch (error) {
-    console.error("Google OAuth Error:", error);
+    logger.error({ err: error }, "Google OAuth Error");
     return res.redirect(`${process.env.FRONTEND_URL}/login?error=google`);
   }
 };

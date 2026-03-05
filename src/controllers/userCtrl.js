@@ -1,7 +1,8 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const sendVerificationEmail = require("../helpers/nodemailer")
+const sendVerificationEmail = require("../helpers/nodemailer");
+const logger = require("../utils/logger");
 
 
 const registerUser = async (req, res) => {
@@ -55,7 +56,7 @@ const registerUser = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Register Error:", error);
+    logger.error({ err: error }, "Register Error");
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -135,8 +136,7 @@ const loginUser = async (req, res) => {
       });
 
   } catch (error) {
-
-    console.error(error);
+    logger.error({ err: error }, "Login Error");
 
     res
       .status(500)
@@ -271,7 +271,7 @@ const verifyEmail = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Verify Error:", error);
+    logger.error({ err: error }, "Verify Error");
     return res.status(500).json({
       success: false,
       message: "Server error",
